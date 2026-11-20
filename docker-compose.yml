@@ -1,20 +1,58 @@
 services:
+  vault:
+    image: hashicorp/vault
+    container_name: ciuismeglchuan-vault
+    restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+    ulimits:  # Docker imposes a default limit of 64MB for locked memory, which is insufficient for Vault. This configuration raises the limit to unlimited.
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "127.0.0.1:8200:8200"
+    volumes:
+      - vault_data:/vault/file
+      - ./vault/config/vault.hcl:/vault/config/vault.hcl:ro
+      - ./vault/ceremony.sh:/ceremony.sh:ro
+    command: server 
+
+  vault-init:
+    image: hashicorp/vault
+    container_name: ciuismeglchuan-vault-init
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      - vault
+    volumes:
+      - vault_data:/vault/file
+      - ./vault/unseal-and-provision.sh:/unseal-and-provision.sh:ro
+      - runtime_secrets:/run/secrets
+      - apache_certs:/certs
+    entrypoint: ["/bin/sh", "/unseal-and-provision.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /run/secrets/db_password && test -f /certs/server.key"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
   mysql-db:
     image: mysql:8.0
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     container_name: ciuismeglchuan-mysql
     restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    depends_on:
+      vault-init:
+        condition: service_healthy
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD_FILE: /run/secrets/db_password
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-    secrets:
-      - db_password
-      - db_root_password
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d:ro
+      - runtime_secrets:/run/secrets:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$$MYSQL_USER -p$$(cat /run/secrets/db_password)"]
       interval: 5s
@@ -31,17 +69,17 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-    secrets:
-      - source: db_password
-        target: spring.datasource.password
-
-secrets:
-  db_password:
-    file: ./secrets/db_pwd.txt
-  db_root_password:
-    file: ./secrets/db_root_pwd.txt
+    volumes:
+      - runtime_secrets:/run/secrets:ro
 
 volumes:
+  vault_data:
   mysql_data:
+  apache_certs:
+  runtime_secrets:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=16m,mode=0755"
