@@ -66,13 +66,26 @@ services:
     depends_on:
       mysql-db:
         condition: service_healthy
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SERVER_FORWARD_HEADERS_STRATEGY: native
     volumes:
       - runtime_secrets:/run/secrets:ro
+
+  apache:
+    build: ./apache
+    container_name: ciuismeglchuan-apache
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - apache_certs:/usr/local/apache2/certs:ro
 
 volumes:
   vault_data:
