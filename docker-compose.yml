@@ -3,12 +3,6 @@ services:
     image: hashicorp/vault
     container_name: ciuismeglchuan-vault
     restart: unless-stopped
-    cap_add:
-      - IPC_LOCK
-    ulimits:  # Docker imposes a default limit of 64MB for locked memory, which is insufficient for Vault. This configuration raises the limit to unlimited.
-      memlock:
-        soft: -1
-        hard: -1
     ports:
       - "127.0.0.1:8200:8200"
     volumes:
