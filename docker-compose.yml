@@ -74,17 +74,24 @@ services:
     container_name: ciuismeglchuan-apache
     restart: unless-stopped
     depends_on:
-      - app
+      app:
+        condition: service_started
+      vault-init:
+        condition: service_healthy
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:8080"
+      - "443:8443"
     volumes:
-      - apache_certs:/usr/local/apache2/certs:ro
+      - apache_certs:/etc/ssl/apache:ro
 
 volumes:
   vault_data:
   mysql_data:
   apache_certs:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=4m,mode=0750,uid=0,gid=33"
   runtime_secrets:
     driver_opts:
       type: tmpfs
