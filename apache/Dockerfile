@@ -48,4 +48,7 @@ RUN usermod -L www-data \
     && chown -R root:root /usr/local/apache2 \
     && chmod -R go-w /usr/local/apache2
 
+# CIS Sezione 5.4/5.6: Rimozione pagine di benvenuto e file CGI di default (htdocs e cgi-bin)
+RUN rm -rf /usr/local/apache2/htdocs/* /usr/local/apache2/cgi-bin/*
+
 USER www-data
