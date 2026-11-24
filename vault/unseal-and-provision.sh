@@ -45,7 +45,7 @@ chown 0:33 /certs /certs/server.key
 chown 0:0 /certs/fullchain.crt
 chmod 750 /certs
 chmod 644 /certs/fullchain.crt
-chmod 640 /certs/server.key
+chmod 440 /certs/server.key
 
 # Revoca immediata del token AppRole temporaneo
 vault token revoke -self >/dev/null
