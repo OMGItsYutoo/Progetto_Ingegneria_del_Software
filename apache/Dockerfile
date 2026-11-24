@@ -31,16 +31,9 @@ RUN sed -i \
     -e 's/^\(LoadModule cgi_module\)/#\1/' \
     /usr/local/apache2/conf/httpd.conf
 
-    
-# Sposta la porta HTTP di default da 80 a 8080 e imposta ServerName globale
-RUN sed -i \
-    -e 's/^Listen 80$/Listen 8080/' \
-    -e 's/^#ServerName www.example.com:80/ServerName localhost/' \
-    /usr/local/apache2/conf/httpd.conf
-
-# CIS Sezione 3 (3.1 - 3.12): Account bloccato, ownership root:root, permessi e runtime dir
+# CIS Sezione 3 (3.1 - 3.12): Account bloccato, ownership root:root, permessi e runtime dir + log directory
 RUN usermod -L www-data \
-    && mkdir -p /var/run/apache2 /etc/ssl/apache \
+    && mkdir -p /var/run/apache2/logs /etc/ssl/apache \
     && chown -R www-data:www-data /var/run/apache2 \
     && chmod 750 /var/run/apache2 \
     && chown root:www-data /etc/ssl/apache \
@@ -50,5 +43,19 @@ RUN usermod -L www-data \
 
 # CIS Sezione 5.4/5.6: Rimozione pagine di benvenuto e file CGI di default (htdocs e cgi-bin)
 RUN rm -rf /usr/local/apache2/htdocs/* /usr/local/apache2/cgi-bin/*
+
+# CIS Sezione 5.15: Ascolto solo su interfaccia di rete selezionata 
+RUN sed -i \
+        -e 's/^Listen 80$/Listen 172.20.0.6:8080/' \
+        -e 's/^#ServerName www.example.com:80/ServerName localhost/' \
+        /usr/local/apache2/conf/httpd.conf && \
+    rm -rf /usr/local/apache2/conf/original \
+           /usr/local/apache2/conf/extra/httpd-*.conf 
+
+# CIS Sezione 6.2: Log di errore su syslog
+RUN sed -i 's|^ErrorLog .*|ErrorLog "syslog:local1"|' /usr/local/apache2/conf/httpd.conf
+
+# CIS Sezione 6.3: Server Access Log configuration
+RUN sed -i 's|CustomLog /proc/self/fd/1 common|CustomLog /proc/self/fd/1 combined|' /usr/local/apache2/conf/httpd.conf
 
 USER www-data
