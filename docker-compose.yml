@@ -90,6 +90,17 @@ services:
         condition: service_started
       vault-init:
         condition: service_healthy
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+      - apparmor=docker-default
+    tmpfs:
+      - /var/run/apache2:uid=33,gid=33,mode=0750
+      - /var/run/apache2/logs:uid=33,gid=33,mode=0750
+      - /var/log/apache2:uid=33,gid=33,mode=0750
+      - /tmp:uid=33,gid=33,mode=1777
     ports:
       - "${HOST_BIND_IP:-127.0.0.1}:80:8080"
       - "${HOST_BIND_IP:-127.0.0.1}:443:8443"
