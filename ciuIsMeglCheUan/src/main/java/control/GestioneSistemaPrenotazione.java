@@ -158,7 +158,7 @@ public class GestioneSistemaPrenotazione {
      *   <li>Calcola il costo totale includendo stagionalità</li>
      * </ol>
      *
-     * @param accId Lista degli ID degli accessori selezionati (può essere vuota)
+     * @param accId Lista degli ID degli accessori selezionati (può essere vuota o null)
      * @param dataRitiro Data di ritiro nel formato yyyy-MM-dd
      * @param dataConsegna Data di consegna nel formato yyyy-MM-dd
      * @param email Email del cliente registrato
@@ -189,18 +189,20 @@ public class GestioneSistemaPrenotazione {
             this.prenotazioneControl.creaPrenotazione(dataRitiro,dataConsegna,cr,s);
             Prenotazione eP = this.prenotazioneControl.getPrenotazioneInCorso();
 
-            if(accId!=null) {
-                List<Accessorio> acc=new ArrayList<>();
-                for(int id:accId){
-                    Accessorio a=AccessorioDAO.readAccessorio(id);
+            List<Accessorio> acc = new ArrayList<>();
+            if (accId != null) {
+                for (int id : accId) {
+                    Accessorio a = AccessorioDAO.readAccessorio(id);
                     if (a != null) {
                         acc.add(a);
-                    }else throw new OperationException("Accessorio non trovato");
+                    } else {
+                        throw new OperationException("Accessorio non trovato");
+                    }
                 }
-                eP.setAccessori(acc);
             }
+            eP.setAccessori(acc);
 
-            float costo=calcoloCostoPrenotazione(eP);
+            float costo = calcoloCostoPrenotazione(eP);
             eP.setCostoTotale(costo);
 
             return eP;
@@ -222,17 +224,20 @@ public class GestioneSistemaPrenotazione {
      * @throws OperationException se il cliente non è registrato o le credenziali sono errate
      */
     public ClienteRegistrato autenticazioneUtente(String email, String password) throws OperationException {
-        try{
-        ClienteRegistrato cr=ClienteRegistratoDAO.readClienteRegistrato(email);
-
-        if(cr==null) {
-            throw new OperationException("È richiesta la registrazione per effettuare una prenotazione");
-        }
-
-        if(!cr.getPassword().equals(password)) {
+        if (email == null || password == null) {
             throw new OperationException("Credenziali errate");
         }
-        return cr;
+        try {
+            ClienteRegistrato cr = ClienteRegistratoDAO.readClienteRegistrato(email);
+
+            if (cr == null) {
+                throw new OperationException("È richiesta la registrazione per effettuare una prenotazione");
+            }
+
+            if (cr.getPassword() == null || !cr.getPassword().equals(password)) {
+                throw new OperationException("Credenziali errate");
+            }
+            return cr;
         } catch (DAOException | DBConnectionException e) {
             throw new OperationException(e.getMessage());
         }
@@ -247,18 +252,25 @@ public class GestioneSistemaPrenotazione {
      * rispettive tabelle del database.</p>
      *
      * @return Messaggio di conferma del salvataggio
-     * @throws OperationException se si verifica un errore durante il salvataggio
+     * @throws OperationException se non esiste una prenotazione in corso o si verifica un errore durante il salvataggio
      */
     public String savePrenotazione() throws OperationException {
         try {
-            Prenotazione eP=this.prenotazioneControl.getPrenotazioneInCorso();
-
-            int idPrenotazione=PrenotazioneDAO.createPrenotazione(eP);
-            List<Accessorio> acc=eP.getAccessori();
-
-            for (Accessorio a:acc){
-                PrenotazioneAccessorioDAO.createPrenotazioneAccessorio(idPrenotazione,a.getId());
+            Prenotazione eP = this.prenotazioneControl.getPrenotazioneInCorso();
+            if (eP == null) {
+                throw new OperationException("Nessuna prenotazione in corso.");
             }
+
+            int idPrenotazione = PrenotazioneDAO.createPrenotazione(eP);
+            List<Accessorio> acc = eP.getAccessori();
+
+            if (acc != null) {
+                for (Accessorio a : acc) {
+                    PrenotazioneAccessorioDAO.createPrenotazioneAccessorio(idPrenotazione, a.getId());
+                }
+            }
+
+            this.prenotazioneControl.prenotazioneInCorso = null;
 
             return "La prenotazione è avvenuta con successo";
         } catch (DAOException | DBConnectionException e) {
@@ -328,7 +340,7 @@ public class GestioneSistemaPrenotazione {
         float costo = 0;
         List<Accessorio> acc = prenotazione.getAccessori();
 
-        if(acc!=null) {
+        if (acc != null) {
             for (Accessorio a : acc) {
                 costo += a.getPrezzo();
             }

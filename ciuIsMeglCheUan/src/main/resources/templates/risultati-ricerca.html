@@ -88,7 +88,7 @@
     <div id="opzioniPrenotazioneModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4);">
         <div style="background:white; border-radius:18px; max-width:520px; margin:60px auto; padding:35px; position:relative;" id="opzioniPrenotazioneContent">
             <!-- Il contenuto sarà caricato via AJAX -->
-            <button style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:22px; cursor:pointer;" onclick="closeOpzioniPrenotazionePopup()">&times;</button>
+            <button style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:22px; cursor:pointer;" class="close-btn">&times;</button>
             <div class="loading-message" id="opzioniPrenotazioneLoading">Caricamento opzioni...</div>
             <div id="opzioniPrenotazioneInner"></div>
         </div>
@@ -96,47 +96,10 @@
 
     <!-- Footer con "powered by" -->
     <div class="powered-by">
-        <p class="credits">Provided by CiùIsMeglCheUan</p>
+        <p class="credits">Provided by CiùIsMeglChUan</p>
     </div>
 </div>
 
-<script>
-    // Attacco event listener a tutti i bottoni dopo il render
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.btn-seleziona').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targa = this.getAttribute('data-targa');
-                const dataRitiro = this.getAttribute('data-ritiro');
-                const dataConsegna = this.getAttribute('data-consegna');
-                showOpzioniPrenotazionePopup(targa, dataRitiro, dataConsegna);
-            });
-        });
-    });
-
-    function showOpzioniPrenotazionePopup(targa, dataRitiro, dataConsegna) {
-        // Mostra il modal
-        document.getElementById('opzioniPrenotazioneModal').style.display = 'block';
-        document.getElementById('opzioniPrenotazioneLoading').style.display = 'block';
-        document.getElementById('opzioniPrenotazioneInner').innerHTML = '';
-
-        // AJAX per caricare il fragment Thymeleaf
-        fetch('/opzioniPrenotazione?targa=' + encodeURIComponent(targa) +
-            '&dataRitiro=' + encodeURIComponent(dataRitiro) +
-            '&dataConsegna=' + encodeURIComponent(dataConsegna))
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('opzioniPrenotazioneInner').innerHTML = html;
-                document.getElementById('opzioniPrenotazioneLoading').style.display = 'none';
-            })
-            .catch(() => {
-                document.getElementById('opzioniPrenotazioneInner').innerHTML = '<div style="color:red;">Errore durante il caricamento delle opzioni.</div>';
-                document.getElementById('opzioniPrenotazioneLoading').style.display = 'none';
-            });
-    }
-
-    function closeOpzioniPrenotazionePopup() {
-        document.getElementById('opzioniPrenotazioneModal').style.display = 'none';
-    }
-</script>
+<script src="js/popup_prenotazione.js" defer></script>
 </body>
 </html>
