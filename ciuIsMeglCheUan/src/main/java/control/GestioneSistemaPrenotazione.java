@@ -215,16 +215,23 @@ public class GestioneSistemaPrenotazione {
 
 
     /**
-     * Autentica un utente verificando email e password.
+     * Autentica un utente verificando email e password in modo resistente agli attacchi di enumerazione e timing.
      *
-     * <p>Recupera il cliente dal database utilizzando l'email e verifica
-     * che la password fornita corrisponda a quella memorizzata.</p>
+     * <p>Recupera il cliente dal database tramite l'indirizzo email e confronta la password fornita
+     * con l'hash BCrypt memorizzato mediante verifica a tempo costante ({@code BCryptPasswordEncoder}).
+     * Nel caso in cui l'utente non esista, esegue comunque una verifica fittizia su un hash dummy
+     * per mantenere uniforme il tempo di risposta ed evitare side-channel temporali.</p>
      *
      * @param email Email del cliente da autenticare
-     * @param password Password del cliente
-     * @return Il cliente registrato se l'autenticazione è riuscita
-     * @throws OperationException se il cliente non è registrato o le credenziali sono errate
+     * @param password Password in chiaro inserita dal cliente
+     * @return Il cliente registrato se l'autenticazione ha avuto esito positivo
+     * @throws OperationException se i parametri sono nulli, l'utente non è registrato o la password è errata
+     *                            (restituendo un messaggio generico uniforme per prevenire l'Account Enumeration)
      */
+    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder(12);
+    private static final String DUMMY_BCRYPT_HASH =
+            "$2a$12$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW";
+
     public ClienteRegistrato autenticazioneUtente(String email, String password) throws OperationException {
         if (email == null || password == null) {
             throw new OperationException("Credenziali errate");
@@ -232,7 +239,13 @@ public class GestioneSistemaPrenotazione {
         try {
             ClienteRegistrato cr = ClienteRegistratoDAO.readClienteRegistrato(email);
 
-            if (cr == null || cr.getPassword() == null || !new BCryptPasswordEncoder(12).matches(password, cr.getPassword())) {
+            String targetHash = (cr != null && cr.getPassword() != null)
+                    ? cr.getPassword()
+                    : DUMMY_BCRYPT_HASH;
+
+            boolean passwordMatches = PASSWORD_ENCODER.matches(password, targetHash);
+
+            if (cr == null || cr.getPassword() == null || !passwordMatches) {
                 throw new OperationException("Credenziali errate");
             }
             return cr;
