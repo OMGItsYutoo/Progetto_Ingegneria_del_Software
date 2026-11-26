@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrazione - TouristScooters</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
+    <link rel="stylesheet" th:href="@{/registrazione.css}">
+</head>
+<body>
+<div class="top-bar">
+    <div class="auth-buttons">
+        <a th:href="@{/}" class="btn btn-register">Home</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="homepage-logo">
+        <img th:src="@{/logo.png}" alt="Logo">
+    </div>
+
+    <div class="register-card">
+        <h2 class="register-title">Registrazione Cliente</h2>
+
+        <div th:if="${error}" class="alert-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div th:if="${success}" class="alert-success">
+            <span th:text="${success}"></span>
+        </div>
+
+        <form id="registration-form" method="POST" th:action="@{/registrazione}" class="register-form">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" th:value="${nome}" placeholder="Mario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cognome">Cognome</label>
+                <input type="text" id="cognome" name="cognome" th:value="${cognome}" placeholder="Rossi" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dataDiNascita">Data di Nascita</label>
+                <input type="date" id="dataDiNascita" name="dataDiNascita" th:value="${dataDiNascita}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" th:value="${email}" placeholder="mario.rossi@email.it" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" minlength="8" placeholder="••••••••" required>
+                <small class="password-hint">Minimo 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero e 1 carattere speciale.</small>
+            </div>
+
+            <div id="client-error" class="alert-error"></div>
+
+            <button type="submit" class="btn-submit-register">Registrati</button>
+        </form>
+    </div>
+
+    <div class="powered-by">
+        <p class="credits">Provided by CiùIsMeglCheUan</p>
+    </div>
+</div>
+
+<script th:src="@{/js/registrazione.js}"></script>
+</body>
+</html>

@@ -16,26 +16,26 @@ INSERT INTO Agenzie (localita, indirizzo, email, numeroDiTelefono, usernameTitol
 ('Bologna', 'Via Indipendenza 56', 'bologna@scooter.it', '051-77889900', 'mario_rossi'),
 ('Torino', 'Via Po 134', 'torino@scooter.it', '011-66554433', 'luigi_bianchi');
 
--- Inserimento Clienti Registrati
+-- Inserimento Clienti Registrati (password di test in chiaro per tutti gli account: Password123!)
 INSERT INTO ClientiRegistrati (nome, cognome, dataDiNascita, email, password) VALUES
-('Luca', 'Ferrari', '1990-03-15', 'luca.ferrari@email.it', 'luca123'),
-('Giulia', 'Romano', '1988-07-22', 'giulia.romano@email.it', 'giulia456'),
-('Marco', 'Conti', '1992-11-08', 'marco.conti@email.it', 'marco789'),
-('Sara', 'Ricci', '1985-01-30', 'sara.ricci@email.it', 'sara012'),
-('Alessandro', 'Marino', '1995-09-12', 'alex.marino@email.it', 'alex345'),
-('Francesca', 'Bruno', '1987-04-25', 'franca.bruno@email.it', 'franca678'),
-('Davide', 'Galli', '1993-12-03', 'davide.galli@email.it', 'davide901'),
-('Chiara', 'Lombardi', '1991-06-18', 'chiara.lombardi@email.it', 'chiara234'),
-('Roberto', 'Esposito', '1989-10-14', 'roberto.esposito@email.it', 'roberto567'),
-('Elena', 'Bosco', '1994-02-07', 'elena.Bosco@email.it', 'elena890'),
-('Matteo', 'Santoro', '1986-08-29', 'matteo.santoro@email.it', 'matteo123'),
-('Valentina', 'Costa', '1996-05-16', 'vale.costa@email.it', 'vale456'),
-('Simone', 'Barbieri', '1990-09-23', 'simone.barbieri@email.it', 'simone789'),
-('Laura', 'Pellegrini', '1988-12-11', 'laura.pellegrini@email.it', 'laura012'),
-('Andrea', 'Moretti', '1992-03-28', 'andrea.moretti@email.it', 'andrea345'),
-('Federica', 'Rizzo', '1993-05-14', 'fede.rizzo@email.it', 'fede678'),
-('Giacomo', 'Vitale', '1987-09-02', 'giacomo.vitale@email.it', 'giacomo901'),
-('Martina', 'De Luca', '1991-11-19', 'martina.deluca@email.it', 'martina234');
+('Luca', 'Ferrari', '1990-03-15', 'luca.ferrari@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Giulia', 'Romano', '1988-07-22', 'giulia.romano@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Marco', 'Conti', '1992-11-08', 'marco.conti@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Sara', 'Ricci', '1985-01-30', 'sara.ricci@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Alessandro', 'Marino', '1995-09-12', 'alex.marino@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Francesca', 'Bruno', '1987-04-25', 'franca.bruno@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Davide', 'Galli', '1993-12-03', 'davide.galli@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Chiara', 'Lombardi', '1991-06-18', 'chiara.lombardi@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Roberto', 'Esposito', '1989-10-14', 'roberto.esposito@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Elena', 'Bosco', '1994-02-07', 'elena.Bosco@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Matteo', 'Santoro', '1986-08-29', 'matteo.santoro@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Valentina', 'Costa', '1996-05-16', 'vale.costa@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Simone', 'Barbieri', '1990-09-23', 'simone.barbieri@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Laura', 'Pellegrini', '1988-12-11', 'laura.pellegrini@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Andrea', 'Moretti', '1992-03-28', 'andrea.moretti@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Federica', 'Rizzo', '1993-05-14', 'fede.rizzo@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Giacomo', 'Vitale', '1987-09-02', 'giacomo.vitale@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC'),
+('Martina', 'De Luca', '1991-11-19', 'martina.deluca@email.it', '$2b$12$uDG.71gSCnApEadiHWAfxOZrtkzVzP.NEjAjrZGnDgunWHMeYzAuC');
 
 -- Inserimento Scooter (Prezzi fissi: Alta Stagione 50€, Bassa Stagione 20€)
 INSERT INTO Scooter (targa, cilindrata, prezzoPerGiornoNoleggioAltaStagione, prezzoPerGiornoNoleggioBassaStagione, stato, tipologia, agenziaId) VALUES

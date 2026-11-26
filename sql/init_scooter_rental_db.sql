@@ -21,7 +21,7 @@ CREATE TABLE ClientiRegistrati (
     cognome VARCHAR(20) NOT NULL,
     dataDiNascita VARCHAR(10) NOT NULL,
     email VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(20) NOT NULL
+    password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Scooter (

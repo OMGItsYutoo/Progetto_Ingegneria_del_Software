@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Classe controller principale per la gestione del sistema di prenotazione scooter.
@@ -230,17 +232,96 @@ public class GestioneSistemaPrenotazione {
         try {
             ClienteRegistrato cr = ClienteRegistratoDAO.readClienteRegistrato(email);
 
-            if (cr == null) {
-                throw new OperationException("È richiesta la registrazione per effettuare una prenotazione");
-            }
-
-            if (cr.getPassword() == null || !cr.getPassword().equals(password)) {
+            if (cr == null || cr.getPassword() == null || !new BCryptPasswordEncoder(12).matches(password, cr.getPassword())) {
                 throw new OperationException("Credenziali errate");
             }
             return cr;
         } catch (DAOException | DBConnectionException e) {
             throw new OperationException(e.getMessage());
         }
+    }
+
+    /**
+     * Registra un nuovo cliente nel sistema validando i dati e cifrando la password con BCrypt.
+     *
+     * @param nome Nome del cliente
+     * @param cognome Cognome del cliente
+     * @param dataDiNascita Data di nascita nel formato yyyy-MM-dd
+     * @param email Email del cliente
+     * @param rawPassword Password in chiaro
+     * @return Il cliente registrato salvato
+     * @throws OperationException se i dati non sono validi, la password è debole o l'email è già registrata
+     */
+    public ClienteRegistrato registraCliente(String nome, String cognome, String dataDiNascita, String email, String rawPassword) throws OperationException {
+        if (isBlank(nome) || isBlank(cognome) || isBlank(dataDiNascita) || isBlank(email) || isBlank(rawPassword)) {
+            throw new OperationException("Tutti i campi sono obbligatori");
+        }
+
+        String trimmedEmail = email.trim();
+        if (!Pattern.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", trimmedEmail)) {
+            throw new OperationException("Formato email non valido");
+        }
+
+        try {
+            LocalDate birthDate = LocalDate.parse(dataDiNascita.trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+            if (!birthDate.isBefore(LocalDate.now())) {
+                throw new OperationException("Data di nascita non valida");
+            }
+        } catch (Exception e) {
+            if (e instanceof OperationException) {
+                throw (OperationException) e;
+            }
+            throw new OperationException("Formato data di nascita non valido (atteso yyyy-MM-dd)");
+        }
+
+        if (!isPasswordStrong(rawPassword)) {
+            throw new OperationException("La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola, un numero e un carattere speciale");
+        }
+
+        try {
+            if (ClienteRegistratoDAO.readClienteRegistrato(trimmedEmail) != null) {
+                throw new OperationException("Email già registrata");
+            }
+
+            String hashedPassword = new BCryptPasswordEncoder(12).encode(rawPassword);
+            ClienteRegistrato nuovoCliente = new ClienteRegistrato(
+                    nome.trim(),
+                    cognome.trim(),
+                    dataDiNascita.trim(),
+                    trimmedEmail,
+                    hashedPassword
+            );
+            ClienteRegistratoDAO.createClienteRegistrato(nuovoCliente);
+            return nuovoCliente;
+        } catch (DAOException | DBConnectionException e) {
+            throw new OperationException(e.getMessage());
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private boolean isPasswordStrong(String password) {
+        if (password.length() < 8) {
+            return false;
+        }
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLower = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            } else {
+                hasSpecial = true;
+            }
+        }
+        return hasUpper && hasLower && hasDigit && hasSpecial;
     }
 
 

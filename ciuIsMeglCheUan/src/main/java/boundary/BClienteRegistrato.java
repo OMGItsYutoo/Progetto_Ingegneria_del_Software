@@ -154,5 +154,47 @@ public class BClienteRegistrato {
             return "error";
         }
     }
+
+    /**
+     * Mostra il form di registrazione per un nuovo cliente.
+     *
+     * @return Nome del template di registrazione
+     */
+    @GetMapping({"/registrazione", "/register"})
+    public String mostraFormRegistrazione() {
+        return "registrazione";
+    }
+
+    /**
+     * Gestisce la registrazione di un nuovo cliente.
+     *
+     * @param nome Nome del cliente
+     * @param cognome Cognome del cliente
+     * @param dataDiNascita Data di nascita nel formato yyyy-MM-dd
+     * @param email Email del cliente
+     * @param password Password in chiaro del cliente
+     * @param model Oggetto Model di Spring per passare dati alla vista
+     * @return Redirect alla home in caso di successo, altrimenti il form con errore
+     */
+    @PostMapping("/registrazione")
+    public String registraCliente(
+            @RequestParam String nome,
+            @RequestParam String cognome,
+            @RequestParam String dataDiNascita,
+            @RequestParam String email,
+            @RequestParam String password,
+            Model model) {
+        try {
+            gestioneSistema.registraCliente(nome, cognome, dataDiNascita, email, password);
+            return "redirect:/";
+        } catch (OperationException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("nome", nome);
+            model.addAttribute("cognome", cognome);
+            model.addAttribute("dataDiNascita", dataDiNascita);
+            model.addAttribute("email", email);
+            return "registrazione";
+        }
+    }
 }
 

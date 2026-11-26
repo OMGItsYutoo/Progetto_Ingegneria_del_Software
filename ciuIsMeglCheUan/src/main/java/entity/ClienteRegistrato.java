@@ -33,6 +33,10 @@ public class ClienteRegistrato {
         return cognome;
     }
 
+    public String getDataDiNascita() {
+        return dataDiNascita;
+    }
+
     public String getEmail() {
         return email;
     }
