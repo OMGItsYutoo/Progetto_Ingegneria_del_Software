@@ -29,7 +29,7 @@ chmod 644 /run/secrets/db_password /run/secrets/spring.datasource.password /run/
 
 # Emissione certificato server (RSA 3072, 180gg) -> solo fullchain.crt + server.key in /certs
 CERT_JSON=$(vault write -format=json pki_int/issue/ciuismeglchuan-server \
-  common_name="localhost" \
+  common_name="${DOMAIN_NAME}" \
   alt_names="localhost" \
   ip_sans="127.0.0.1" \
   ttl="4320h")

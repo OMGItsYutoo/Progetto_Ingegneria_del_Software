@@ -60,7 +60,7 @@ vault write pki_int/intermediate/set-signed certificate=@/tmp/intermediate.cert.
 rm -f /tmp/pki_int.csr /tmp/intermediate.cert.pem
 
 vault write pki_int/roles/ciuismeglchuan-server \
-  allowed_domains="localhost" \
+  allowed_domains="${DOMAIN_NAME}" \
   allow_localhost=true \
   allow_ip_sans=true \
   key_type="rsa" \

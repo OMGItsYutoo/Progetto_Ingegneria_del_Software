@@ -19,6 +19,8 @@ services:
     container_name: ciuismeglchuan-vault-init
     user: "0:0"
     restart: unless-stopped
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
     depends_on:
       - vault
     networks:
