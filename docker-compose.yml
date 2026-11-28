@@ -101,6 +101,7 @@ services:
     tmpfs:
       - /var/run/apache2:uid=33,gid=33,mode=0750
       - /var/run/apache2/logs:uid=33,gid=33,mode=0750
+      - /var/run/apache2/modsec:uid=33,gid=33,mode=0750
       - /var/log/apache2:uid=33,gid=33,mode=0750
       - /tmp:uid=33,gid=33,mode=1777
     ports:
